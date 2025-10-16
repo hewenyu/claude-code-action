@@ -10,6 +10,24 @@
    - Or `CLAUDE_CODE_OAUTH_TOKEN` for OAuth token authentication (Pro and Max users can generate this by running `claude setup-token` locally)
 3. Copy the workflow file from [`examples/claude.yml`](../examples/claude.yml) into your repository's `.github/workflows/`
 
+## Using Third-Party Relay Services
+
+Third-party relay services provide an alternative way to access Claude through intermediary API endpoints. This is useful for:
+
+- Regional access optimization (e.g., accessing from regions where direct Anthropic API access is restricted)
+- API rate limiting and caching
+- Cost management and billing
+- Custom authentication schemes
+
+**Setup steps:**
+
+1. Obtain an authentication token from your relay service provider
+2. Add the token to your repository secrets as `ANTHROPIC_AUTH_TOKEN`
+3. Copy the workflow file from [`examples/third-party-relay.yml`](../examples/third-party-relay.yml) into your repository's `.github/workflows/`
+4. Update the `ANTHROPIC_BASE_URL` environment variable in the workflow to point to your relay service endpoint
+
+See the [Configuration Guide](./configuration.md#using-third-party-relay-services) for detailed documentation and examples.
+
 ## Using a Custom GitHub App
 
 If you prefer not to install the official Claude app, you can create your own GitHub App to use with this action. This gives you complete control over permissions and access.

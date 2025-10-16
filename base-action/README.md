@@ -81,6 +81,16 @@ Add the following to your workflow file:
     prompt: "Update dependencies"
     allowed_tools: "Bash(git:*),View,GlobTool,GrepTool,BatchTool"
     claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+# Using third-party relay service with auth token
+- name: Run Claude Code with third-party relay
+  uses: anthropics/claude-code-base-action@beta
+  env:
+    ANTHROPIC_BASE_URL: "https://your-relay-service.com/api"
+  with:
+    prompt: "Review this code"
+    allowed_tools: "Bash(git:*),View,GlobTool,GrepTool,BatchTool"
+    anthropic_auth_token: ${{ secrets.ANTHROPIC_AUTH_TOKEN }}
 ```
 
 ## Inputs
@@ -101,6 +111,7 @@ Add the following to your workflow file:
 | `anthropic_model`         | DEPRECATED: Use 'model' instead                                                                   | No       | 'claude-4-0-sonnet-20250219' |
 | `fallback_model`          | Enable automatic fallback to specified model when default model is overloaded                     | No       | ''                           |
 | `anthropic_api_key`       | Anthropic API key (required for direct Anthropic API)                                             | No       | ''                           |
+| `anthropic_auth_token`    | Anthropic auth token (alternative to anthropic_api_key, commonly used with third-party relays)    | No       | ''                           |
 | `claude_code_oauth_token` | Claude Code OAuth token (alternative to anthropic_api_key)                                        | No       | ''                           |
 | `use_bedrock`             | Use Amazon Bedrock with OIDC authentication instead of direct Anthropic API                       | No       | 'false'                      |
 | `use_vertex`              | Use Google Vertex AI with OIDC authentication instead of direct Anthropic API                     | No       | 'false'                      |
@@ -479,6 +490,35 @@ This example shows how to use OIDC authentication with GCP Vertex AI:
     model: "claude-3-7-sonnet@20250219"
     allowed_tools: "Bash(git:*),View,GlobTool,GrepTool,BatchTool"
 ```
+
+## Example: Using Third-Party Relay Services
+
+Third-party relay services allow you to use Claude Code through an intermediary API endpoint. This is commonly used for:
+
+- API rate limiting and caching
+- Custom authentication schemes
+- Regional access optimization
+- Cost management and billing
+
+To use a third-party relay service:
+
+```yaml
+- name: Run Claude Code with third-party relay
+  uses: anthropics/claude-code-base-action@beta
+  env:
+    ANTHROPIC_BASE_URL: "https://your-relay-service.com/api"
+  with:
+    prompt: "Your prompt here"
+    allowed_tools: "Bash(git:*),View,GlobTool,GrepTool,BatchTool"
+    anthropic_auth_token: ${{ secrets.ANTHROPIC_AUTH_TOKEN }}
+```
+
+Key configuration:
+
+- `ANTHROPIC_BASE_URL`: Set as an environment variable to point to your relay service endpoint
+- `anthropic_auth_token`: Use instead of `anthropic_api_key` if your relay service uses this authentication method
+
+**Note**: Some relay services may still use `anthropic_api_key` instead. Check your relay service's documentation for the correct authentication method.
 
 ## Security Best Practices
 

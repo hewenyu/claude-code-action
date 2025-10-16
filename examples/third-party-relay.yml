@@ -1,0 +1,157 @@
+name: Claude Code with Third-Party Relay
+
+# This example demonstrates using Claude Code Action with a third-party relay service.
+# Third-party relay services are intermediary API endpoints that can provide:
+# - API rate limiting and caching
+# - Custom authentication schemes
+# - Regional access optimization (e.g., access from regions where Anthropic API is restricted)
+# - Cost management and billing
+
+on:
+  issue_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned, labeled]
+  pull_request_review:
+    types: [submitted]
+  pull_request_review_comment:
+    types: [created]
+  pull_request:
+    types: [opened, synchronize, ready_for_review, reopened]
+
+jobs:
+  claude-with-relay:
+    runs-on: ubuntu-latest
+    # Only run when triggered by the phrase or issue assignment
+    if: |
+      github.event_name == 'issue_comment' ||
+      github.event_name == 'pull_request_review' ||
+      github.event_name == 'pull_request_review_comment' ||
+      github.event_name == 'issues' ||
+      github.event_name == 'pull_request'
+
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Claude Code with third-party relay
+        uses: anthropics/claude-code-action@v1
+        env:
+          # Point to your relay service endpoint
+          # Examples:
+          # - https://cc.letsfunapp.com/api (Chinese relay service example)
+          # - https://your-relay-service.com/api (your custom relay)
+          ANTHROPIC_BASE_URL: "https://your-relay-service.com/api"
+        with:
+          # Use ANTHROPIC_AUTH_TOKEN for relay services
+          # Some relay services may use ANTHROPIC_API_KEY instead - check your service's documentation
+          anthropic_auth_token: ${{ secrets.ANTHROPIC_AUTH_TOKEN }}
+
+          # Configure trigger phrase (default: @claude)
+          trigger_phrase: "@claude"
+
+          # Optional: Customize branch prefix
+          branch_prefix: "claude/"
+
+---
+# Alternative example: Using with workflow automation
+
+name: Automated PR Review with Relay
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  auto-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Automated Review via Relay
+        uses: anthropics/claude-code-action@v1
+        env:
+          ANTHROPIC_BASE_URL: "https://your-relay-service.com/api"
+        with:
+          anthropic_auth_token: ${{ secrets.ANTHROPIC_AUTH_TOKEN }}
+          # Provide explicit prompt for automation mode
+          prompt: |
+            Review this pull request and provide feedback on:
+            1. Code quality and best practices
+            2. Potential bugs or issues
+            3. Performance considerations
+            4. Security concerns
+
+            Focus on the most important issues that would impact the codebase.
+
+---
+# Example: Using with specific model via relay
+
+name: Claude with Custom Model via Relay
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  claude-custom-model:
+    runs-on: ubuntu-latest
+    if: contains(github.event.comment.body, '@claude')
+
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Claude with specific model
+        uses: anthropics/claude-code-action@v1
+        env:
+          ANTHROPIC_BASE_URL: "https://your-relay-service.com/api"
+        with:
+          anthropic_auth_token: ${{ secrets.ANTHROPIC_AUTH_TOKEN }}
+          trigger_phrase: "@claude"
+          # Specify custom model (ensure your relay service supports it)
+          claude_args: |
+            --model claude-opus-4-1-20250805
+
+---
+# Setup Instructions:
+#
+# 1. Obtain authentication token from your relay service provider
+#    - For Chinese relay services like letsfunapp, sign up at their website
+#    - For custom relay services, follow your provider's setup instructions
+#
+# 2. Add the authentication token to GitHub Secrets:
+#    - Go to your repository Settings → Secrets and variables → Actions
+#    - Click "New repository secret"
+#    - Name: ANTHROPIC_AUTH_TOKEN
+#    - Value: Your relay service API key/token
+#
+# 3. Set the base URL in your workflow (as shown above)
+#    - Use the env.ANTHROPIC_BASE_URL to point to your relay endpoint
+#
+# 4. Test the setup:
+#    - Create a test issue or PR
+#    - Comment with @claude (or your configured trigger phrase)
+#    - Verify Claude responds through your relay service
+#
+# Important Notes:
+# - Different relay services may have different authentication methods
+# - Check your relay service documentation for the correct base URL format
+# - Some services use ANTHROPIC_API_KEY instead of ANTHROPIC_AUTH_TOKEN
+# - Ensure your relay service supports the Claude models you want to use
+# - Monitor your usage and costs according to your relay service's pricing
