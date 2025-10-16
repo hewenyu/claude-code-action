@@ -270,6 +270,46 @@ For provider-specific models:
     # ... other inputs
 ```
 
+## Using Third-Party Relay Services
+
+Third-party relay services provide an intermediary API endpoint for accessing Claude, commonly used for:
+
+- API rate limiting and caching
+- Custom authentication schemes
+- Regional access optimization
+- Cost management and billing
+
+To use a third-party relay service, configure both the base URL and authentication token:
+
+```yaml
+- uses: anthropics/claude-code-action@v1
+  env:
+    ANTHROPIC_BASE_URL: "https://your-relay-service.com/api"
+  with:
+    anthropic_auth_token: ${{ secrets.ANTHROPIC_AUTH_TOKEN }}
+    # ... other inputs
+```
+
+### Configuration Details
+
+- **`ANTHROPIC_BASE_URL`**: Set as an environment variable to point to your relay service endpoint
+- **`anthropic_auth_token`**: Use this input for authentication (some services may still use `anthropic_api_key`)
+
+### Example: Chinese Relay Service
+
+For relay services like those commonly used in China:
+
+```yaml
+- uses: anthropics/claude-code-action@v1
+  env:
+    ANTHROPIC_BASE_URL: "https://cc.example.com/api"
+  with:
+    anthropic_auth_token: ${{ secrets.ANTHROPIC_AUTH_TOKEN }}
+    trigger_phrase: "@claude"
+```
+
+**Security Note**: Always store your authentication tokens in GitHub Secrets, never commit them directly to your repository.
+
 ## Claude Code Settings
 
 You can provide Claude Code settings to customize behavior such as model selection, environment variables, permissions, and hooks. Settings can be provided either as a JSON string or a path to a settings file.

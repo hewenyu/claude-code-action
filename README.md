@@ -2,7 +2,7 @@
 
 # Claude Code Action
 
-A general-purpose [Claude Code](https://claude.ai/code) action for GitHub PRs and issues that can answer questions and implement code changes. This action intelligently detects when to activate based on your workflow context—whether responding to @claude mentions, issue assignments, or executing automation tasks with explicit prompts. It supports multiple authentication methods including Anthropic direct API, Amazon Bedrock, and Google Vertex AI.
+A general-purpose [Claude Code](https://claude.ai/code) action for GitHub PRs and issues that can answer questions and implement code changes. This action intelligently detects when to activate based on your workflow context—whether responding to @claude mentions, issue assignments, or executing automation tasks with explicit prompts. It supports multiple authentication methods including Anthropic direct API, third-party relay services, Amazon Bedrock, and Google Vertex AI.
 
 ## Features
 
@@ -29,7 +29,7 @@ This command will guide you through setting up the GitHub app and required secre
 **Note**:
 
 - You must be a repository admin to install the GitHub app and add secrets
-- This quickstart method is only available for direct Anthropic API users. For AWS Bedrock or Google Vertex AI setup, see [docs/cloud-providers.md](./docs/cloud-providers.md).
+- This quickstart method is only available for direct Anthropic API users. For AWS Bedrock, Google Vertex AI, or third-party relay services, see the documentation links below.
 
 ## 📚 Solutions & Use Cases
 
